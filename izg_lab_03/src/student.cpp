@@ -208,9 +208,6 @@ void pinedaTriangle(const Point &v1, const Point &v2, const Point &v3, const RGB
  * SAMOSTATNY BODOVANY UKOL. Doplnuji pouze studenti.
  */
 
-bool rovnakeZnamienka(int x, int y) {
-    return (x <= 0) == (y <= 0);
-}
 void pinedaPolygon(const Point *points, const int size, const RGBA &color1, const RGBA &color2)
 {
     // Pri praci muzete vyuzit pro vas predpripravene datove typy z base.h., napriklad:
@@ -230,40 +227,37 @@ void pinedaPolygon(const Point *points, const int size, const RGBA &color1, cons
 
     // Nalezeni obalky (minX, maxX), (minY, maxY) polygonu.
 
-    //////// DOPLNTE KOD /////////
-
     int minX;
     int maxX;
     int minY;
     int maxY;
 
     // najdenie min a max hodnot
-
-    for (int i = 0; i < size; i++) {
-        if (i == 0) {
-            minX = points[i].x;
-            maxX = points[i].x;
-            minY = points[i].y;
-            maxY = points[i].y;
-        }
-        else {
-            if (points[i].x < minX) {
+    if (size != 0) {
+        for (int i = 0; i < size; i++) {
+            if (i == 0) {
                 minX = points[i].x;
-            }
-            if (points[i].x > maxX) {
                 maxX = points[i].x;
-            }
-            if (points[i].y < minY) {
                 minY = points[i].y;
-            }
-            if (points[i].y > maxY) {
                 maxY = points[i].y;
+            }
+            else {
+                if (points[i].x < minX) {
+                    minX = points[i].x;
+                }
+                if (points[i].x > maxX) {
+                    maxX = points[i].x;
+                }
+                if (points[i].y < minY) {
+                    minY = points[i].y;
+                }
+                if (points[i].y > maxY) {
+                    maxY = points[i].y;
+                }
             }
         }
     }
     // Oriznuti obalky (minX, maxX), (minY, maxY) polygonu podle rozmeru okna
-
-    //////// DOPLNTE KOD /////////
 
     if (minX < 0) minX = 0;
     if (maxX > width) maxX = width;
@@ -276,7 +270,6 @@ void pinedaPolygon(const Point *points, const int size, const RGBA &color1, cons
 	// v prvnim vrcholu hrany, konec v druhem vrcholu.
 	// Vypocet prvnotnich hodnot hranovych funkci pro jednotlive hrany.
 
-    //////// DOPLNTE KOD /////////
 
     EdgeParams edgeParams(size);
 
@@ -285,88 +278,77 @@ void pinedaPolygon(const Point *points, const int size, const RGBA &color1, cons
         edgeParams[i].deltaY = points[(i + 1)%size].y - points[i].y;
     }
 
-    // Test konvexnosti polygonu    
-    //////// DOPLNTE KOD /////////
+    // Test konvexnosti polygonu
     
-    bool convex = true;
-    bool first = 0;
-    bool other = 0;
+    bool first_sign;
+    bool sign;
     for (int i = 0; i < size; i++) {
-        if (i == 0) {
-            if (edgeParams[i].deltaX * edgeParams[(i + 1) % size].deltaY - edgeParams[i].deltaY * edgeParams[(i + 1) % size].deltaX >= 0) {
-                first = 1;
-            }
-            else {
-                first = 0;
-            }
+        if (edgeParams[i].deltaX * edgeParams[(i + 1) % size].deltaY - edgeParams[i].deltaY * edgeParams[(i + 1) % size].deltaX >= 0) {
+            sign = 1;
         }
         else {
-            if (edgeParams[i].deltaX * edgeParams[(i + 1) % size].deltaY - edgeParams[i].deltaY * edgeParams[(i + 1) % size].deltaX >= 0) {
-                other = 1;
-            }
-            else {
-                other = 0;
-            }
-            if (first != other) {
-                convex = false;
+            sign = 0;
+        }
+
+        // ulozenie prveho znamienka
+        if (i == 0) {
+            first_sign = sign;
+        }
+        // porovnanie ostatnych znamienok
+        else {
+            if (sign != first_sign) {
+                printf("Nekonvexny polygon! Vyplnene na vlastne riziko.\n");
                 break;
             }
         }
     }
     
 
-
     // Vyplnovani: Cyklus pres vsechny body (x, y) v obdelniku (minX, minY), (maxX, maxY).
     // Pro aktualizaci hodnot hranove funkce v bode P (x +/- 1, y) nebo P (x, y +/- 1)
     // vyuzijte hodnoty hranove funkce E (x, y) z bodu P (x, y) */
 
-    //////// DOPLNTE KOD /////////
-
-
-    if (convex) {
-        EdgeFncValues edgeFncValues(size);
-        
-        
-        for (int y = minY; y < maxY; y++) {
-            for (int x = minX; x < maxX; x++) {
-                
-                if (x == minX && y == minY) {
-                    for (int i = 0; i < size; i++) {
-                        edgeFncValues[i] = edgeParams[i].deltaX * (y - points[i].y) - edgeParams[i].deltaY * (x - points[i].x);
-                    }
+    EdgeFncValues edgeFncValues(size);
+    for (int y = minY; y < maxY; y++) {
+        for (int x = minX; x < maxX; x++) {
+            
+            // vypocet hranovej funkcie pre prvy pixel
+            if (x == minX && y == minY) {
+                for (int i = 0; i < size; i++) {
+                    edgeFncValues[i] = edgeParams[i].deltaX * (y - points[i].y) - edgeParams[i].deltaY * (x - points[i].x);
                 }
-                else {
-                    for (int w = 0; w < size; w++) {
-                        edgeFncValues[w] -= edgeParams[w].deltaY;
-                    }
-                }
-
-                int CanPutPixel = 1;
+            }
+            else {
+                // posun hranovej funkcie na kazdej hrane
                 for (int w = 0; w < size; w++) {
-                    if (edgeFncValues[w] < 0) {
-                        CanPutPixel = 0;
-                    }
-                }
-                if (CanPutPixel == 1) {
-                    putPixel(x, y, color1);
-
+                    edgeFncValues[w] -= edgeParams[w].deltaY;
                 }
             }
 
-
+            // zistenie ci pixel lezi vnutri polygonu
+            int valid_pixel = 1;
             for (int w = 0; w < size; w++) {
-                edgeFncValues[w] += (maxX - minX) * edgeParams[w].deltaY;
+                if (edgeFncValues[w] < 0) {
+                    valid_pixel = 0;
+                }
             }
+            if (valid_pixel == 1) {
+                putPixel(x, y, color1);
 
-            for (int w = 0; w < size; w++) {
-                edgeFncValues[w] += edgeParams[w].deltaX;
             }
-            
-            
         }
-    
-    }
 
+        // posun na x=0
+        for (int w = 0; w < size; w++) {
+            edgeFncValues[w] += (maxX - minX) * edgeParams[w].deltaY;
+        }
+
+        // posun na y += 1
+        for (int w = 0; w < size; w++) {
+            edgeFncValues[w] += edgeParams[w].deltaX;
+        }
+                
+    }
 
     // Prekresleni hranic polygonu barvou color2.
     for (int i = 0; i < size; i++) {

@@ -1,11 +1,1 @@
-﻿  student.c
-C:\Users\pavel\Desktop\izg_lab_01\student.c(39,84): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\Users\pavel\Desktop\izg_lab_01\student.c(64,55): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\Users\pavel\Desktop\izg_lab_01\student.c(65,56): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\Users\pavel\Desktop\izg_lab_01\student.c(66,54): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
-  Generating code
-  5 of 20 functions (25.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  izg_lab_01.vcxproj -> C:\Users\pavel\Desktop\izg_lab_01\Release\izg_lab_01.exe
+﻿  izg_lab_01.vcxproj -> C:\Users\pavel\Desktop\IZG_LABS\izg_lab_01\Release\izg_lab_01.exe
